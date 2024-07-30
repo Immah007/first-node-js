@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poiret+One&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Alata&display=swap');
+    @import url('https://fonts.cdnfonts.com/css/google-sans');
+    
+   :root{
+       --main-color: #00bfff;
+       --background-color: #dbe9f4;
+       --red-theme: red;
+       --pink-theme: #FFOO7F;
+       --green-theme: green;
+       --bright-green-theme: rgb(40,200,40);
+       --blue-theme: blue;
+       --sky-blue-theme: #00bfff;
+       --royal-blue-theme: #114;
+       --purple-theme: purple;
+       --orange-theme: #FF5F1F;
+       --orange-background-light: orange;
+       --orange-background-dark: darkorange;
+       --red-background-light: pink;
+       --red-background-dark: ;
+       --green-background-light: lightgreen;
+       --green-background-dark: darkgreen;
+       --blue-background-light: #dbe9f4;
+       --blue-background-dark: darkblue;
+   }
+      body {width: 100%; margin: 0; padding: 0; height: 100%; box-sizing: border-box; margin: 0; padding-bottom: 10rem; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--background-color); text-align: center; transition-duration: 7s;}
+            #header { background: rgba(0, 0, 0, 0.15); padding: 0.25rem; position: relative; top: 0px;  gap: 12px; width: 100%; left: 0; right: 0; display: flex; align-items: cente; height: 7rem; box-sizing: border-box; backdrop-filter: blur(10px); padding-right:8px; padding-left: 8px; justify-content: space-between;}
+            h1{font-size: 4rem; margin: 0; padding: 0; font-family: 'Poiret One', cursive; background: redd; }       
+            span{font-family: 'Alata', sans-serif; font-weight: light;}
+            #AI{
+                color: var(--main-color);
+            }
+            .topButtonHolder{
+                height: 70%; aspect-ratio: 1/1; background: redd; display: flex; align-items: center; justify-content: center; align-self: center;
+            }
+            .topBtn{
+             height: 95%; aspect-ratio: 1/1; border: none; background: none;
+            }
+      .topButtonHoldeRt{
+                height: 70%; aspect-ratio: 1/1; background: redd; display: flex; align-items: center; justify-content: space-between; align-self: center;
+            }
+            .outMsg{font-family: 'Product Sans', sans-serif; font-weight: boldd;
+                max-width: 50%; transition: 2.3s;
+   min-height: 20px;
+   background: rgb(200,220,250, 0.0);/*var(--main-color); */
+  margin: 0 auto;
+   color: #114; 
+   word-break: break-word; align-self: right; border: 2px solid var(--main-color);
+   margin-top: 10px; margin-left: 5px; text-align: left;
+   border-top-left-radius: 20px;
+   border-bottom-left-radius: 1px; font-size: 32px;
+   border-top-right-radius: 20px;
+   border-bottom-right-radius: 20px; margin-left: 45%;
+            }
+            .timeStamp{
+                width: 90%; font-weight: light; font-family: 'Product Sans Light', sans-serif;
+                height: 20px;
+                background: var(--orange-theme);
+                text-align: right;
+                position: relative; bottom: 7px; right: 7px; font-size: 24px;
+            }
+            .inMsg{font-family: 'Product Sans Light', sans-serif;
+                width: 50%;
+                height: 90px;
+                background: aqua;
+                border-radius: 50px;
+                padding: 7px;
+            }
+
+      #form { background: rgba(0, 0, 0, 0.15); padding: 0.25rem; position: fixed; bottom: 4px;  gap: 12px; width: 100%; left: 0; right: 0; display: flex; align-items: center; height: 3.7rem; box-sizing: border-box; backdrop-filter: blur(10px); padding-right:8px; padding-left: 10px; justify-content: space-evenly; text-align: center;}
+      #input { font-size: 24px; border: none; padding: 0 1rem; padding-right: 7.9rem; word-break: break-word; height: 100%; z-index: ..; background-color: rgba(255,255,255,0.8); flex-grow: 1;   box-shadow: 1px 2px 4px 1px black; border-radius: 2rem; margin: 0.rem; padding-right: 7rem; padding-left: 3rem; font-family: 'Product Sans Light', sans-serif;}
+      #input:focus { outline: none; }
+      #form > button {background-color: var(--main-color); width: 65px; height: 65px;  box-shadow: 2px 2px 4px 0px black;  display: flex; align-items: center; justify-content: center; text-align: center;
+               border: none; padding: 0 1rem; margin: 0.25rem; border-radius: 50%; outline: none; color: #fff; }
+
+      #messages { list-style-type: none; margin: 0; padding: 0; }
+      #messages > li { padding: 0.5rem 1rem; }
+      #messages > li:nth-child(odd) { background: #efefef; }
+      .inputhold{height: 90%; flex-grow: 1; position: relative; background: redd; display: flex; justify-conten: center; text-align: center; align-ittems: center; text-align: center;}
+
+  /*   TAGGED MESSAGE FUNCTIONALITY CODE. COMING SOON...
+      .inputhold::before{ content: "heehhjkskskkk"; position: absolute; box-sizing: border-box; border-left: 3px solid blue; text-align: left; padding: 4px; font-size: 24px;
+          width: 100%; height: 100%; background: grey; top: -100%;
+      }    */
+
+.left-div,
+.right-div {box-sizing: border-box; padding: 4px; display: flex; align-items: center; justify-content: space-between;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+ /* aspect-ratio: 1/1; /* Adjust the width as needed */
+}
+
+.left-div {
+  left: 2px;  border-radius: 50%;
+  background-color: white; height: 100%; aspect-ratio: 1/1;/* Adjust the background color as needed */
+}
+
+.right-div {
+  right: 2px; border-top-right-radius: 1rem; border-bottom-right-radius: 1rem; 
+  background-color: whitee;  height: 100%;  aspect-ratio: 2.5/1; display: flex; justify-content: space-evenly; /*Adjust the background color as needed */
+}
+.icon{height: 100%; aspect-ratio: 1/1; background: whitee; border-radius: 50%;}
+ .iconbutton{width: 100%; height: 100%; border-radius: 50%; background: greyy; color: black; border: none; display: flex; align-items: center; justify-content: center; }
+
+
+ @media only screen and (max-width: 997px) and (orientation: portrait) {
+          
+           #form{
+               height: 7.3rem; 
+               bottom: 1.5rem;
+           }   
+         svg{
+             transform: scale(2);
+         }
+         #input{ padding-left: 6.8rem; padding-right: 14.1rem;
+                 border-radius: 4rem; font-size: 32px;
+         }
+         
+         #form > button{ width: 130px; height: 130px;} 
+         
+      }
+
+    #darkMode{display: inline-block; }
+
+    </style>
+  </head>
+  <body>
+      <div id="header">
+          <div class="topButtonHolder">
+              <button class="topBtn" onclick="profile()">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16"> <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/> </svg>
+
+
+
+
+
+
+
+              </button>
+          </div>
+          <h1>luminos.<span id="AI">CHAT</span></h1>
+          <div class="topButtonHoldeRt">
+            <!--  <button class="topBtn" >
+                  <svg id="darkMode" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" id="colorChangr" class="bi bi-moon-stars" viewBox="0 0 16 16"> <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278zM4.858 1.311A7.269 7.269 0 0 0 1.025 7.71c0 4.02 3.279 7.276 7.319 7.276a7.316 7.316 0 0 0 5.205-2.162c-.337.042-.68.063-1.029.063-4.61 0-8.343-3.714-8.343-8.29 0-1.167.242-2.278.681-3.286z"/> <path d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z"/> </svg>
+
+
+              </button>-->
+              
+              <button class="topBtn" id="colorChanger" onclick="changeTheme()">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-stars" viewBox="0 0 16 16"> <path d="M7.657 6.247c.11-.33.576-.33.686 0l.645 1.937a2.89 2.89 0 0 0 1.829 1.828l1.936.645c.33.11.33.576 0 .686l-1.937.645a2.89 2.89 0 0 0-1.828 1.829l-.645 1.936a.361.361 0 0 1-.686 0l-.645-1.937a2.89 2.89 0 0 0-1.828-1.828l-1.937-.645a.361.361 0 0 1 0-.686l1.937-.645a2.89 2.89 0 0 0 1.828-1.828l.645-1.937zM3.794 1.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387A1.734 1.734 0 0 0 4.593 5.69l-.387 1.162a.217.217 0 0 1-.412 0L3.407 5.69A1.734 1.734 0 0 0 2.31 4.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387A1.734 1.734 0 0 0 3.407 2.31l.387-1.162zM10.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732L9.1 2.137a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L10.863.1z"/> </svg>
+              </button>
+          </div>
+        </div>  
+
+    <p id="messages">section reservation: <b>#FF033E, State Display.</b></p>
+   <!-- <div class="outMsg"> This is a sample message.
+        <div class="timeStamp">11.59</div>
+    </div> -->
+
+
+    <div id="form" action="">
+
+      <div class="inputhold" > 
+       <div class="left-div">
+          <div class="icon"><button class="iconbutton" id="emoji"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-emoji-smile" viewBox="0 0 16 16"> <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/> <path d="M4.285 9.567a.5.5 0 0 1 .683.183A3.498 3.498 0 0 0 8 11.5a3.498 3.498 0 0 0 3.032-1.75.5.5 0 1 1 .866.5A4.498 4.498 0 0 1 8 12.5a4.498 4.498 0 0 1-3.898-2.25.5.5 0 0 1 .183-.683zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zm4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5z"/> </svg>
+</button></div>
+           </div> 
+      <input id="input" type="text" placeholder="Type a message..." autocomplete="off" />
+       <div class="right-div"><div class="icon"><button class="iconbutton" id="emoji">
+        <svg fill="#000000" width="24" height="24" viewBox="0 0 30 30" ><path d="M24.243.008c-.826.05-1.62.31-2.322.708-.7.396-1.29.91-1.847 1.403L3.28 16.972c-.71.628-1.443 1.292-2.035 2.114-.592.823-1.02 1.78-1.176 2.8-.158 1.02-.042 2.068.302 3.03.342.962.898 1.823 1.56 2.567.66.743 1.448 1.395 2.36 1.85.913.454 1.942.666 2.966.666 1.03 0 2.027-.34 2.915-.823.888-.484 1.637-1.126 2.35-1.75l14.3-12.534c.502-.44-.158-1.194-.66-.754l-14.3 12.535c-.704.617-1.4 1.207-2.166 1.624-.766.416-1.618.7-2.47.7-.847 0-1.718-.178-2.49-.562-.774-.386-1.467-.954-2.058-1.618-.592-.666-1.075-1.422-1.366-2.238-.29-.813-.386-1.698-.256-2.542.13-.844.488-1.66.998-2.37.51-.708 1.185-1.325 1.888-1.947l16.79-14.856c.552-.487 1.093-.948 1.68-1.28.586-.33 1.238-.54 1.89-.58.65-.04 1.32.093 1.916.37.6.28 1.14.706 1.587 1.217.447.51.798 1.1 1 1.727.198.628.248 1.304.13 1.946-.12.64-.407 1.26-.804 1.803-.397.543-.917 1.025-1.463 1.516L9.763 24.766c-.382.343-.75.66-1.14.877-.392.22-.825.35-1.254.37-.43.018-.874-.075-1.275-.262-.402-.187-.773-.47-1.104-.806-.32-.325-.586-.685-.757-1.073-.17-.384-.245-.81-.205-1.215.04-.403.198-.805.44-1.153s.584-.664.957-.99L19.818 7.894c.503-.44-.157-1.195-.66-.755L4.764 19.76c-.38.333-.788.698-1.117 1.172-.33.475-.557 1.032-.616 1.626-.058.593.052 1.184.286 1.715.233.53.58.983.962 1.372.396.402.858.76 1.393 1.01.54.252 1.138.384 1.742.358.606-.026 1.185-.21 1.698-.496.513-.286.932-.657 1.32-1.007L27.34 10.33c.553-.496 1.128-1.022 1.602-1.67.475-.65.83-1.4.98-2.213.15-.81.088-1.65-.16-2.43-.25-.78-.676-1.48-1.203-2.082-.528-.6-1.172-1.117-1.915-1.463-.744-.347-1.573-.513-2.4-.464z"/></svg> 
+
+
+     </button></div><div class="icon"><button class="iconbutton" id="emoji"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-camera-fill" viewBox="0 0 16 16"> <path d="M10.5 8.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/> <path d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2zm.5 2a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm9 2.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0z"/> </svg>
+
+</button></div></div> 
+      </div> 
+            <button onclick="sendMsg()" id="sendBtn"> 
+               <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" id="micSvg" fill="currentColor" class="bi bi-mic-fill" viewBox="0 0 16 16"> <path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0V3z"/> <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5z"/> </svg>
+               
+                              <!--send svg to go here-->
+               <svg fill="currentColor" id="sendIcon" width="45" height="45" style="display:none" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><title>ionicons-v5-q</title><path d="M16,464,496,256,16,48V208l320,48L16,304Z"/></svg> 
+            </button>
+    </div>
+    <script>
+        let logo = document.getElementById("AI");
+        let mic = document.getElementById("sendBtn");
+        let background = document.querySelector("body");
+        let colorChanger = document.getElementById("colorChanger");
+        let micSvg = document.getElementById("micSvg");
+        let sendIcon = document.getElementById("sendIcon");
+        let body = document.querySelector("body");
+        let input = document.getElementById("input");
+        
+        function hideMic(){sendIcon.style.display = "inline-block"; micSvg.style.display = "none" }
+        
+        
+        
+        // Add an event listener to the input
+input.addEventListener('input', function() {
+  // Check if the input value is not empty
+  if (input.value.trim() !== '') {
+    // Enable the button
+     hideMic()
+  } else {
+    // Disable the button
+    sendIcon.style.display = "none";
+    micSvg.style.display = "inline-block"
+  }
+});
+
+        //SENDING THE MESSAGE...
+        function sendMsg(){
+
+            //Your message processing code
+   
+        var hr = new Date().getHours();
+        var min = new Date().getMinutes();
+            if (min< 10) {min = "0"+ min};
+        var time = hr+":"+min;
+      
+       let textBox = document.createElement('div');  
+           textBox.setAttribute("class","outMsg");
+           textBox.style.padding = '10px';
+           textBox.style.wordBreak= 'breakWord';
+           textBox.setAttribute("id","sent");
+           textBox.innerText = input.value;
+       let timeStamp = document.createElement('div');
+           timeStamp.style.fontWeight ='bold';
+           timeStamp.style.textAlign = 'right'; 
+           timeStamp.style.display = 'block';  // fld.style.background ="red";
+           timeStamp.style.paddingTop = '10px'; 
+           timeStamp.style.fontSize = "24px";
+           timeStamp.innerText = time;
+             
+
+           input.value = null;
+           sendIcon.style.display = "none";
+           micSvg.style.display = "inline-block";
+
+
+           body.appendChild(textBox); 
+           textBox.appendChild(timeStamp);       
+
+            body.scrollTo(0, document.body.scrollHeight);
+     
+     
+       /*  //Sender's message processing code
+       function incomingText(){
+    for (var i =1; i<2; i++){  
+        var hr = new Date().getHours();
+   var min = new Date().getMinutes();
+     if (min< 10) {min = "0"+ min  }
+   var time = hr+":"+min;
+       let message = document.getElementById("msg").value;
+
+       let inBox = document.createElement('div');  
+           inBox.setAttribute("class","divv");
+           inBox.style.padding = '10px';
+           inBox.style.background ="#00ffff";
+           inBox.style.color = "#115";
+          // inbox.style.marginLeft = "5px";
+           inBox.innerText = message;
+       let fld = document.createElement('div');
+           fld.style.textAlign = 'right'; 
+           fld.style.display = 'block';
+           fld.style.paddingTop = '10px';
+           fld.innerText = time;
+             
+       let body = document.querySelector('#msgBody');     
+      
+       body.appendChild(inBox); 
+       inBox.appendChild(fld);       
+            document.getElementById("msg").value = null;
+             body.scrollTo(0, document.body.scrollHeight);
+        }
+      }
+            
+            //........................... */
+            
+            
+        }
+       //start of grabbing css variable 
+        const root = document.documentElement;
+        const mainColor = getComputedStyle(root).getPropertyValue('--main-color');
+
+        //End of Grabbing the css variable
+        let colorIdentity = 0;
+        function changeTheme(){
+            logo.style.transition = "2s";
+            colorChanger.style.transition = "2s";
+            mic.style.transition = "2s";
+
+            if(colorIdentity == 0){ 
+                
+                
+          
+               //Change to Grey Theme
+               root.style.setProperty('--main-color', 'black'); 
+               root.style.setProperty('--background-color', 'rgb(50,50,50, .01)');
+            
+                
+              colorIdentity =1;  
+                
+
+
+            }
+            else if(colorIdentity===1){
+                                           //Change to RED Theme
+               root.style.setProperty('--main-color', 'red');
+               root.style.setProperty('--background-color', 'rgb(225, 222,222)');
+            
+            
+            colorIdentity = 2;        
+           
+           }
+           else if(colorIdentity===2){
+                                       //Change to PINK Theme
+               root.style.setProperty('--main-color', '#FF007F');
+               root.style.setProperty('--background-color', 'rgb(225,215,220)');
+                
+            
+            colorIdentity = 3;        
+           
+           }
+           else if(colorIdentity===3){
+                                        //Change to GREEN Theme
+               root.style.setProperty('--main-color', 'green');
+               root.style.setProperty('--background-color', 'rgb(200,230,200)');
+               
+            
+            colorIdentity = 4;        
+           
+           }
+           else if(colorIdentity===4){
+                                         //Change to BRIGHT-GREEN Theme
+               root.style.setProperty('--main-color', 'rgb(40,200,40)');
+               root.style.setProperty('--background-color', 'rgb(200,230,200)');
+              
+            
+            colorIdentity = 5;        
+           
+           }
+           else if(colorIdentity===5){
+                                           //Change to BLUE Theme
+               root.style.setProperty('--main-color', 'blue');
+               root.style.setProperty('--background-color', '#dbe9f4');
+            
+            
+            colorIdentity = 6;        
+           
+           }
+           else if(colorIdentity===6){
+                                           //Change to ROYAL-BLUE Theme
+               root.style.setProperty('--main-color', '#114');
+               root.style.setProperty('--background-color', '#dbe9f4');
+            
+            
+            colorIdentity = 7;        
+           }
+           else if(colorIdentity===7){
+                                           //Change to ORANGE Theme
+               root.style.setProperty('--main-color', '#FF5F1F');
+               root.style.setProperty('--background-color', '#FFF0E6');
+            
+            
+            colorIdentity = 8;
+           }
+           
+           
+           else{
+                                       //Change to DEFAULT Theme              
+             root.style.setProperty('--main-color', '#00bfff');
+               root.style.setProperty('--background-color', '#dbe9f4');
+            
+            
+            colorIdentity = 0;    
+           }
+        }
+        
+    </script>
+  </body>
+</html>
