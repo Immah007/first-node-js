@@ -32,7 +32,7 @@ io.on('connection', (socket) => {
 
 // Serve index.html for any other GET request
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'indxx.html'));
+  res.sendFile(path.join(__dirname, 'indexx.html'));
 });
 
 // Start the server
