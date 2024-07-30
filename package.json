@@ -1,0 +1,13 @@
+{
+  "name": "my-node-app",
+  "version": "1.0.0",
+  "description": "A simple Node.js application",
+  "main": "index.js", // Adjust if your main file is named differently
+  "scripts": {
+    "start": "node index.js" // Adjust if your main file is named differently
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.6.0"
+  }
+}
